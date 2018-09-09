@@ -34,15 +34,8 @@ layui.config({
 		}
 	)
 
-	//图片总数
-	$.get("../json/images.json",
-		function(data){
-			$(".imgAll span").text(data.length);
-		}
-	)
-
 	//用户数
-	$.get("../json/usersList.json",
+	$.get("/order/todeal",
 		function(data){
 			$(".userAll span").text(data.length);
 		}

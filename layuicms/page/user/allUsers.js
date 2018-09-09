@@ -8,11 +8,12 @@ layui.config({
 
 	//加载页面数据
 	var usersData = '';
-	$.get("../../json/usersList.json", function(data){
+	// $.get("../../json/usersList.json", function(data){
+	$.get("/order/todeal", function(data){
 		usersData = data;
 		if(window.sessionStorage.getItem("addUser")){
-			var addUser = window.sessionStorage.getItem("addUser");
-			usersData = JSON.parse(addUser).concat(usersData);
+			// var addUser = window.sessionStorage.getItem("addUser");
+			// usersData = JSON.parse(addUser).concat(usersData);
 		}
 		//执行加载数据的方法
 		usersList();
@@ -25,7 +26,8 @@ layui.config({
 			var index = layer.msg('查询中，请稍候',{icon: 16,time:false,shade:0.8});
             setTimeout(function(){
             	$.ajax({
-					url : "../../json/usersList.json",
+					// url : "../../json/usersList.json",
+					url : "/order/todeal",
 					type : "get",
 					dataType : "json",
 					success : function(data){
