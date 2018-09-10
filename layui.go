@@ -3,12 +3,24 @@ package main
 // modified from iris/_examples/overview/main.go
 
 import (
+    "fmt"
+
     "github.com/kataras/iris"
 
     "github.com/yeweishuai/exweb/order"
+    "github.com/yeweishuai/exweb/comm"
 )
 
 func main() {
+    // TODO parse flags
+    toml_conf_file := "conf/exweb.toml"
+    err := ProcessInit(toml_conf_file)
+    if err != nil {
+        fmt.Println("process init fail:%s", err.Error())
+        return
+    }
+    fmt.Printf("get db user:%v, pass:%v\n", comm.GConf.DbConf.DBUser, comm.GConf.DbConf.DBPass)
+
     app := iris.New()
     // app.Logger().SetLevel("disable") to disable the logger
 

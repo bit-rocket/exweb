@@ -1,0 +1,4 @@
+[DbConf]
+DBUser = "abcxyz"
+DBPass = "cdefg"
+DBName = "dbname"

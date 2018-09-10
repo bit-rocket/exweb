@@ -1,10 +1,17 @@
 package order
 
 import (
+    "fmt"
+    "database/sql"
+
     "github.com/kataras/iris"
+    _ "github.com/go-sql-driver/mysql"
+
+    "github.com/yeweishuai/exweb/comm"
+
 )
 
-type Users struct {
+type Order struct {
     UserId      string      `json:"usersId"`
     ExName      string      `json:"exName"`
     TradingPair string      `json:"tradingPair"`
@@ -15,8 +22,8 @@ type Users struct {
 }
 
 func ToDealOrders(ctx iris.Context) {
-    var user []Users
-    peter := Users{
+    var orders []Order
+    mock := Order {
         UserId: "1",
         ExName: "okex",
         TradingPair: "eos/usdt",
@@ -25,7 +32,23 @@ func ToDealOrders(ctx iris.Context) {
         Earn: "20",
         OrderTime: "2017-05-10 10:30",
     }
-    user = append(user, peter)
-    ctx.JSON(user)
+
+    // format:
+    //          user:pass@/dbname
+    db_conf := fmt.Sprintf("%s:%s@/%s",
+            comm.GConf.DbConf.DBUser, comm.GConf.DbConf.DBPass,
+            comm.GConf.DbConf.DBName)
+    db, err := sql.Open("mysql", db_conf)
+    if err != nil {
+        ctx.Application().Logger().Infof("db error:%s", err.Error())
+        return
+    }
+    defer db.Close()
+    // db refer
+    //    http://www.golangprograms.com/example-of-golang-crud-using-mysql-from-scratch.html
+
+
+    orders = append(orders, mock)
+    ctx.JSON(orders)
 }
 
