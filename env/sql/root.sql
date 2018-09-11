@@ -1,4 +1,6 @@
 
+# root create db and grant privileges
+
 create database if not exists crypto_coin;
 
 # change db password !
