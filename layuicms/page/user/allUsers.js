@@ -47,19 +47,19 @@ layui.config({
                             if(ordersStr.exName.indexOf(selectStr) > -1){
                                 ordersStr["exName"] = changeStr(ordersStr.exName);
                             }
-                            //用户邮箱
+                            // trading pair
                             if(ordersStr.tradingPair.indexOf(selectStr) > -1){
                                 ordersStr["tradingPair"] = changeStr(ordersStr.tradingPair);
                             }
-                            //性别
-                            if(ordersStr.price.indexOf(selectStr) > -1){
-                                ordersStr["price"] = changeStr(ordersStr.price);
+                            // buyPrice
+                            if(ordersStr.buyPrice.indexOf(selectStr) > -1){
+                                ordersStr["buyPrice"] = changeStr(ordersStr.buyPrice);
                             }
-                            //会员等级
-                            if(ordersStr.earn.indexOf(selectStr) > -1){
-                                ordersStr["earn"] = changeStr(ordersStr.earn);
+                            // earn percent
+                            if(ordersStr.earnRate.indexOf(selectStr) > -1){
+                                ordersStr["earnRate"] = changeStr(ordersStr.earnRate);
                             }
-                            if(ordersStr.exName.indexOf(selectStr)>-1 || ordersStr.tradingPair.indexOf(selectStr)>-1 || ordersStr.price.indexOf(selectStr)>-1 || ordersStr.earn.indexOf(selectStr)>-1){
+                            if(ordersStr.exName.indexOf(selectStr)>-1 || ordersStr.tradingPair.indexOf(selectStr)>-1 || ordersStr.buyPrice.indexOf(selectStr)>-1 || ordersStr.earnRate.indexOf(selectStr)>-1){
                                 userArray.push(ordersStr);
                             }
                         }
@@ -67,7 +67,7 @@ layui.config({
                         ordersList(ordersData);
                     }
                 })
-                
+
                 layer.close(index);
             },2000);
         }else{
@@ -155,7 +155,7 @@ layui.config({
         layer.confirm('确定删除此用户？',{icon:3, title:'提示信息'},function(index){
             //_this.parents("tr").remove();
             for(var i=0;i<ordersData.length;i++){
-                if(ordersData[i].usersId == _this.attr("data-id")){
+                if(ordersData[i].orderId == _this.attr("data-id")){
                     ordersData.splice(i,1);
                     ordersList(ordersData);
                 }
@@ -175,13 +175,17 @@ layui.config({
                     +  '<td><input type="checkbox" name="checked" lay-skin="primary" lay-filter="choose"></td>'
                     +  '<td>'+currData[i].exName+'</td>'
                     +  '<td>'+currData[i].tradingPair+'</td>'
-                    +  '<td>'+currData[i].price+'</td>'
-                    +  '<td>'+currData[i].earn+'</td>'
+                    +  '<td>'+currData[i].orderAmount+'</td>'
                     +  '<td>'+currData[i].holding+'</td>'
-                    +  '<td>'+currData[i].orderTime+'</td>'
+                    +  '<td>'+currData[i].buyPrice+'</td>'
+                    +  '<td>'+currData[i].sellPrice+'</td>'
+                    +  '<td>'+currData[i].earnRate+ '/' + currData[i].earnAmount + '</td>'
+                    +  '<td>'+currData[i].status+'</td>'
+                    +  '<td>'+currData[i].createTime+'</td>'
+                    +  '<td>'+currData[i].finishTime+'</td>'
                     +  '<td>'
                     +    '<a class="layui-btn layui-btn-mini users_edit"><i class="iconfont icon-edit"></i> 编辑</a>'
-                    +    '<a class="layui-btn layui-btn-danger layui-btn-mini users_del" data-id="'+data[i].usersId+'"><i class="layui-icon">&#xe640;</i> 删除</a>'
+                    +    '<a class="layui-btn layui-btn-danger layui-btn-mini users_del" data-id="'+data[i].orderId+'"><i class="layui-icon">&#xe640;</i> 删除</a>'
                     +  '</td>'
                     +'</tr>';
                 }
@@ -203,5 +207,5 @@ layui.config({
             }
         })
     }
-        
+
 })

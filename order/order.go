@@ -2,6 +2,7 @@ package order
 
 import (
     "fmt"
+//    "time"
     "database/sql"
 
     "github.com/kataras/iris"
@@ -12,26 +13,22 @@ import (
 )
 
 type Order struct {
-    UserId      string      `json:"usersId"`
+    OrderId     string      `json:"orderId"`
     ExName      string      `json:"exName"`
     TradingPair string      `json:"tradingPair"`
-    Price       string      `json:"price"`
+    BuyPrice    string      `json:"buyPrice"`
+    OrderAmount string      `json:"orderAmount"`
     Holding     string      `json:"holding"`
-    Earn        string      `json:"earn"`
-    OrderTime   string      `json:"orderTime"`
+    SellPrice   string      `json:"sellPrice"`
+    EarnRate    string      `json:"earnRate"`
+    EarnAmount  string      `json:"earnAmount"`
+    Status      string      `json:"status"`
+    FinishTime  string      `json:"finishTime"`
+    CreateTime  string      `json:"createTime"`
 }
 
 func ToDealOrders(ctx iris.Context) {
     var orders []Order
-    mock := Order {
-        UserId: "1",
-        ExName: "okex",
-        TradingPair: "eos/usdt",
-        Price: "5.01",
-        Holding: "+1.02%",
-        Earn: "20",
-        OrderTime: "2017-05-10 10:30",
-    }
 
     // format:
     //          user:pass@/dbname
@@ -46,9 +43,45 @@ func ToDealOrders(ctx iris.Context) {
     defer db.Close()
     // db refer
     //    http://www.golangprograms.com/example-of-golang-crud-using-mysql-from-scratch.html
+    query := `select order_id, exchange_name, trading_pair, buy_price,
+            order_amount, holding, sell_price, earn_rate, earn_amount,
+            status, create_time, finish_time
+            from coin_order
+            `
+    res, err := db.Query(query)
+    if err != nil {
+        ctx.Application().Logger().Warnf("db error:%s", err.Error())
+        return
+    }
+    for res.Next() {
+        var order_id, status int
+        var exchange_name, trading_pair string
+        var buy_price, holding, sell_price, earn_rate, earn_amount, order_amount float32
+        var finish_time, create_time []byte
+        err = res.Scan(&order_id, &exchange_name, &trading_pair,
+                &buy_price, &order_amount, &holding, &sell_price, &earn_rate,
+                &earn_amount, &status, &create_time, &finish_time)
+        if err != nil {
+            ctx.Application().Logger().Warnf("scan error:%s", err.Error())
+            continue
+        }
+        order := Order {
+            OrderId: fmt.Sprintf("%d", order_id),
+            ExName: exchange_name,
+            TradingPair: trading_pair,
+            BuyPrice: fmt.Sprintf("%f", buy_price),
+            OrderAmount: fmt.Sprintf("%f", order_amount),
+            Holding: fmt.Sprintf("%f", holding),
+            SellPrice: fmt.Sprintf("%f", sell_price),
+            EarnRate: fmt.Sprintf("%f", earn_rate),
+            EarnAmount: fmt.Sprintf("%f", earn_amount),
+            Status: fmt.Sprintf("%d", status),
+            CreateTime: fmt.Sprintf("%s", string(create_time)),
+            FinishTime: fmt.Sprintf("%s", string(finish_time)),
+        }
+        orders = append(orders, order)
+    }
 
-
-    orders = append(orders, mock)
     ctx.JSON(orders)
 }
 

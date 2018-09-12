@@ -32,7 +32,7 @@ layui.config({
  			userStatus = "限制用户";
  		}
 
- 		addUser = '{"usersId":"'+ new Date().getTime() +'",';//id
+		addUser = '{"orderId":"'+ new Date().getTime() +'",';//id
  		addUser += '"userName":"'+ $(".userName").val() +'",';  //登录名
  		addUser += '"userEmail":"'+ $(".userEmail").val() +'",';	 //邮箱
  		addUser += '"userSex":"'+ data.field.sex +'",'; //性别
