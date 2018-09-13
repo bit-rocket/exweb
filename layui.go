@@ -66,6 +66,10 @@ func main() {
         ctx.View("index.html")
     })
 
+    // TODO user login mvc
+    //     refer to github.com/kataras/iris/
+    //            _examples/structuring/login-mvc-single-responsibility-package
+
     // Listen for incoming HTTP/1.x & HTTP/2 clients on localhost port 8080.
     app.Run(iris.Addr(":8080"), iris.WithCharset("UTF-8"), iris.WithoutVersionChecker)
 }
