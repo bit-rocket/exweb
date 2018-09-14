@@ -29,6 +29,10 @@ type Order struct {
 
 func ToDealOrders(ctx iris.Context) {
     var orders []Order
+    session := comm.GSession.Start(ctx)
+    fmt.Println("test key is :", session.Get("testkey"))
+    fmt.Println("user is :", session.Get("username"))
+    // session.Set("testkey", 123)
 
     // format:
     //          user:pass@/dbname

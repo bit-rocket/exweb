@@ -6,9 +6,11 @@ import (
     "fmt"
 
     "github.com/kataras/iris"
+    "github.com/kataras/iris/mvc"
 
     "github.com/yeweishuai/exweb/order"
     "github.com/yeweishuai/exweb/comm"
+    "github.com/yeweishuai/exweb/user"
 )
 
 func main() {
@@ -69,6 +71,7 @@ func main() {
     // TODO user login mvc
     //     refer to github.com/kataras/iris/
     //            _examples/structuring/login-mvc-single-responsibility-package
+    mvc.Configure(app, configureMVC)
 
     // Listen for incoming HTTP/1.x & HTTP/2 clients on localhost port 8080.
     app.Run(iris.Addr(":8080"), iris.WithCharset("UTF-8"), iris.WithoutVersionChecker)
@@ -80,4 +83,12 @@ func logThisMiddleware(ctx iris.Context) {
     // .Next is required to move forward to the chain of handlers,
     // if missing then it stops the execution at this handler.
     ctx.Next()
+}
+
+func configureMVC(app *mvc.Application) {
+    userApp := app.Party("/user")
+    userApp.Register(
+        comm.GSession.Start,
+    )
+    userApp.Handle(new(user.UController))
 }

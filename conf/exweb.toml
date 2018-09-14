@@ -2,3 +2,6 @@
 DBUser = "abcxyz"
 DBPass = "cdefg"
 DBName = "dbname"
+
+[UserConf]
+abc = "cde"

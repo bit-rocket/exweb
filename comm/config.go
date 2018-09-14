@@ -1,7 +1,10 @@
 package comm
 
 import (
-//    "github.com/kataras/iris"
+    "time"
+
+    "github.com/kataras/iris/mvc"
+    "github.com/kataras/iris/sessions"
 )
 
 type DBConfig struct {
@@ -12,8 +15,24 @@ type DBConfig struct {
 
 type GlobalConfig struct {
     DbConf              DBConfig    `toml:"DbConf"`
+    UserConf            map[string]string   `toml:"UserConf"`
 }
 
 var (
     GConf              GlobalConfig
+
+    CookieName4Session  =   "iriscname4ss"
+    GSession            =   sessions.New(sessions.Config{
+            Cookie: CookieName4Session,
+            AllowReclaim: true,
+            Expires: 14 * time.Minute,
+            })
+)
+
+var (
+    PathIndex           =   mvc.Response{Path: "/"}
+    PathUserLogin       =   mvc.Response{Path: "/user/login"}
+
+    IndexView           =   mvc.View{Name: "/index.html"}
+    UserLoginView       =   mvc.View{Name: "/page/login/login.html"}
 )
