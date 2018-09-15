@@ -53,7 +53,7 @@ func (oc *OController) GetTodeal() {
     defer db.Close()
     // db refer
     //    http://www.golangprograms.com/example-of-golang-crud-using-mysql-from-scratch.html
-    query := `select order_id, exchange_name, trading_pair, buy_price,
+    query := `select id, exchange_name, trading_pair, buy_price,
             order_amount, holding, sell_price, earn_rate, earn_amount,
             status, create_time, finish_time
             from coin_order
@@ -64,11 +64,11 @@ func (oc *OController) GetTodeal() {
         return
     }
     for res.Next() {
-        var order_id, status int
+        var id, status int
         var exchange_name, trading_pair string
         var buy_price, holding, sell_price, earn_rate, earn_amount, order_amount float32
         var finish_time, create_time []byte
-        err = res.Scan(&order_id, &exchange_name, &trading_pair,
+        err = res.Scan(&id, &exchange_name, &trading_pair,
                 &buy_price, &order_amount, &holding, &sell_price, &earn_rate,
                 &earn_amount, &status, &create_time, &finish_time)
         if err != nil {
@@ -76,7 +76,7 @@ func (oc *OController) GetTodeal() {
             continue
         }
         order := Order {
-            OrderId: fmt.Sprintf("%d", order_id),
+            OrderId: fmt.Sprintf("%d", id),
             ExName: exchange_name,
             TradingPair: trading_pair,
             BuyPrice: fmt.Sprintf("%f", buy_price),

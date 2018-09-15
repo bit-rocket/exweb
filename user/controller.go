@@ -35,8 +35,8 @@ func (uc *UController) PostLogin(form formValue) mvc.Result {
         username = form(comm.UsernameKey)
         password = form(comm.UserpassKey)
     )
-    uc.Ctx.Application().Logger().Infof("try login user[%s] pass[%s]",
-            username, password)
+    uc.Ctx.Application().Logger().Infof("ip[%s] try login user[%s] pass[%s]",
+            uc.Ctx.RemoteAddr(), username, password)
     if comm.GConf.UserConf[username] != password {
         return comm.UserLoginView
     }
@@ -47,7 +47,7 @@ func (uc *UController) PostLogin(form formValue) mvc.Result {
 
 func (uc *UController) AnyLogout() mvc.Result {
     uc.Ctx.Application().Logger().Infof("ip[%s], user[%s] logout",
-            uc.Ctx.RemoteAddr() ,uc.Session.GetString("username"))
+            uc.Ctx.RemoteAddr(), uc.Session.GetString("username"))
     uc.Session.Destroy()
     return comm.UserLoginView
 }
