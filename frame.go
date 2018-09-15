@@ -6,7 +6,9 @@ import (
     "fmt"
     "io/ioutil"
 
+    "github.com/kataras/iris"
 	"github.com/BurntSushi/toml"
+
     "github.com/yeweishuai/exweb/comm"
 )
 
@@ -33,4 +35,17 @@ func ProcessInit(conf string) (err error) {
         return
     }
     return
+}
+
+func IndexHandler(ctx iris.Context) {
+        session := comm.GSession.Start(ctx)
+        exist := session.GetString("username")
+        if exist == "" {
+            ctx.Application().Logger().Infof("ip[%s] not login, redirect",
+                    ctx.RemoteAddr())
+            ctx.Redirect(comm.StrUserLogin)
+            return
+        }
+        ctx.Header("Cache-Control", "no-cache")
+        ctx.View("index.html")
 }

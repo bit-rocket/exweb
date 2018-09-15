@@ -30,9 +30,15 @@ var (
 )
 
 var (
+    StrUserLogin        = "/user/login"
     PathIndex           =   mvc.Response{Path: "/"}
-    PathUserLogin       =   mvc.Response{Path: "/user/login"}
+    PathUserLogin       =   mvc.Response{Path: StrUserLogin}
 
     IndexView           =   mvc.View{Name: "/index.html"}
     UserLoginView       =   mvc.View{Name: "/page/login/login.html"}
+)
+
+var (
+    UsernameKey         = "username"
+    UserpassKey         = "password"
 )

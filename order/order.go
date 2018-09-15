@@ -6,6 +6,7 @@ import (
     "database/sql"
 
     "github.com/kataras/iris"
+    "github.com/kataras/iris/sessions"
     _ "github.com/go-sql-driver/mysql"
 
     "github.com/yeweishuai/exweb/comm"
@@ -27,12 +28,17 @@ type Order struct {
     CreateTime  string      `json:"createTime"`
 }
 
-func ToDealOrders(ctx iris.Context) {
+type OController struct {
+    Ctx         iris.Context
+    Session     *sessions.Session
+}
+
+func (oc *OController) GetTodeal() {
     var orders []Order
-    session := comm.GSession.Start(ctx)
-    fmt.Println("test key is :", session.Get("testkey"))
-    fmt.Println("user is :", session.Get("username"))
-    // session.Set("testkey", 123)
+    if oc.Session.GetString(comm.UsernameKey) == "" {
+        oc.Ctx.JSON(orders)
+        return
+    }
 
     // format:
     //          user:pass@/dbname
@@ -41,7 +47,7 @@ func ToDealOrders(ctx iris.Context) {
             comm.GConf.DbConf.DBName)
     db, err := sql.Open("mysql", db_conf)
     if err != nil {
-        ctx.Application().Logger().Infof("db error:%s", err.Error())
+        oc.Ctx.Application().Logger().Infof("db error:%s", err.Error())
         return
     }
     defer db.Close()
@@ -54,7 +60,7 @@ func ToDealOrders(ctx iris.Context) {
             `
     res, err := db.Query(query)
     if err != nil {
-        ctx.Application().Logger().Warnf("db error:%s", err.Error())
+        oc.Ctx.Application().Logger().Warnf("db error:%s", err.Error())
         return
     }
     for res.Next() {
@@ -66,7 +72,7 @@ func ToDealOrders(ctx iris.Context) {
                 &buy_price, &order_amount, &holding, &sell_price, &earn_rate,
                 &earn_amount, &status, &create_time, &finish_time)
         if err != nil {
-            ctx.Application().Logger().Warnf("scan error:%s", err.Error())
+            oc.Ctx.Application().Logger().Warnf("scan error:%s", err.Error())
             continue
         }
         order := Order {
@@ -85,7 +91,5 @@ func ToDealOrders(ctx iris.Context) {
         }
         orders = append(orders, order)
     }
-
-    ctx.JSON(orders)
+    oc.Ctx.JSON(orders)
 }
-

@@ -49,13 +49,6 @@ func main() {
     })
     // app.Done(func(ctx iris.Context) {]})
 
-    orderRoutes := app.Party("order", logThisMiddleware)
-    // flowing is code block, not related above as a function
-    {
-        // set handler for: /order/todeal
-        orderRoutes.Get("/todeal", order.ToDealOrders)
-    }
-
     app.StaticWeb("layui", "layuicms/layui")
     app.StaticWeb("js", "layuicms/js")
     app.StaticWeb("json", "layuicms/json")
@@ -63,18 +56,19 @@ func main() {
     app.StaticWeb("page", "layuicms/page")
     app.StaticWeb("images", "layuicms/images")
 
-    app.Get("/", func(ctx iris.Context) {
-        ctx.Header("Cache-Control", "no-cache")
-        ctx.View("index.html")
-    })
+    app.Get("/", IndexHandler)
 
-    // TODO user login mvc
+    // mvc
     //     refer to github.com/kataras/iris/
     //            _examples/structuring/login-mvc-single-responsibility-package
     mvc.Configure(app, configureMVC)
 
     // Listen for incoming HTTP/1.x & HTTP/2 clients on localhost port 8080.
-    app.Run(iris.Addr(":8080"), iris.WithCharset("UTF-8"), iris.WithoutVersionChecker)
+    app.Run(iris.Addr(":8080"),
+            iris.WithCharset("UTF-8"),
+            iris.WithOptimizations,
+            iris.WithoutVersionChecker,
+        )
 }
 
 func logThisMiddleware(ctx iris.Context) {
@@ -86,9 +80,15 @@ func logThisMiddleware(ctx iris.Context) {
 }
 
 func configureMVC(app *mvc.Application) {
-    userApp := app.Party("/user")
+    userApp := app.Party("/user", logThisMiddleware)
     userApp.Register(
         comm.GSession.Start,
     )
     userApp.Handle(new(user.UController))
+
+    orderRoute := app.Party("/order", logThisMiddleware)
+    orderRoute.Register(
+        comm.GSession.Start,
+    )
+    orderRoute.Handle(new(order.OController))
 }
