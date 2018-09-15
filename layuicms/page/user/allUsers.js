@@ -78,7 +78,7 @@ layui.config({
     //添加会员
     $(".usersAdd_btn").click(function(){
         var index = layui.layer.open({
-            title : "添加会员",
+            title : "新订单",
             type : 2,
             content : "addUser.html",
             success : function(layero, index){

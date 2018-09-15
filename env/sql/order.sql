@@ -18,7 +18,7 @@ create table if not exists coin_order (
     earn_rate        decimal(18, 8) default 0.0,
     earn_amount decimal(18,8) default 0.0,
     status      tinyint default 0
-        comment "0 created, 1 under buy, 2 holding, 3 under sell, 4 finished",
+        comment "0 created, 1 under buy, 2 holding, 3 under sell, 4 manually undo, 5 finished",
     create_time datetime,
     finish_time  datetime,
     primary key (id)

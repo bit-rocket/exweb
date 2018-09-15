@@ -93,3 +93,7 @@ func (oc *OController) GetTodeal() {
     }
     oc.Ctx.JSON(orders)
 }
+
+func (oc *OController) PostNew() {
+    oc.Ctx.JSON(map[string]string{"msg":"ok"})
+}
