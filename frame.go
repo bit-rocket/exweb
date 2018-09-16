@@ -38,6 +38,13 @@ func ProcessInit(conf string) (err error) {
     comm.OrderTypeMap[0] = "dft"
     comm.OrderTypeMap[1] = "buy2sell"
     comm.OrderTypeMap[2] = "sell2buy"
+
+    comm.StatusMap[0] = "created"
+    comm.StatusMap[1] = "buying"
+    comm.StatusMap[2] = "holding"
+    comm.StatusMap[3] = "selling"
+    comm.StatusMap[4] = "quit"
+    comm.StatusMap[5] = "finish"
     return
 }
 

@@ -88,7 +88,7 @@ func (oc *OController) GetTodeal() {
             SellPrice: fmt.Sprintf("%.4f", sell_price),
             EarnRate: fmt.Sprintf("%.4f", earn_rate),
             EarnAmount: fmt.Sprintf("%.4f", earn_amount),
-            Status: fmt.Sprintf("%d", status),
+            Status: fmt.Sprintf("%s", comm.StatusMap[status]),
             CreateTime: fmt.Sprintf("%s", string(create_time)),
             FinishTime: fmt.Sprintf("%s", string(finish_time)),
         }
@@ -106,5 +106,6 @@ func (oc *OController) PostNew() {
         return
     }
     oc.Ctx.Application().Logger().Infof("read json :%v", order)
+    // try insert into db
     oc.Ctx.JSON(map[string]string{"msg":"ok"})
 }

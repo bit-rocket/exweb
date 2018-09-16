@@ -42,4 +42,5 @@ var (
     UsernameKey         = "username"
     UserpassKey         = "password"
     OrderTypeMap        = make(map[int]string)
+    StatusMap           = make(map[int]string)
 )

@@ -147,7 +147,24 @@ layui.config({
 
     //操作
     $("body").on("click",".users_edit",function(){  //编辑
-        layer.alert('您点击了会员编辑按钮，由于是纯静态页面，所以暂时不存在编辑内容，后期会添加，敬请谅解。。。',{icon:6, title:'文章编辑'});
+        // layer.alert('您点击了会员编辑按钮，由于是纯静态页面，所以暂时不存在编辑内容，后期会添加，敬请谅解。。。',{icon:6, title:'文章编辑'});
+        var index = layui.layer.open({
+            title : "新订单",
+            type : 2,
+            content : "addUser.html",
+            success : function(layero, index){
+                setTimeout(function(){
+                    layui.layer.tips('点击此处返回会员列表', '.layui-layer-setwin .layui-layer-close', {
+                        tips: 3
+                    });
+                },500)
+            }
+        })
+        //改变窗口大小时，重置弹窗的高度，防止超出可视区域（如F12调出debug的操作）
+        $(window).resize(function(){
+            layui.layer.full(index);
+        })
+        layui.layer.full(index);
     })
 
     $("body").on("click",".users_del",function(){  //删除
@@ -186,7 +203,8 @@ layui.config({
                     +  '<td>'+currData[i].finishTime+'</td>'
                     +  '<td>'
                     +    '<a class="layui-btn layui-btn-mini users_edit"><i class="iconfont icon-edit"></i> 编辑</a>'
-                    +    '<a class="layui-btn layui-btn-danger layui-btn-mini users_del" data-id="'+data[i].orderId+'"><i class="layui-icon">&#xe640;</i> 删除</a>'
+                    +    '<a class="layui-btn layui-btn-danger layui-btn-mini users_del" data-id="'
+                    +   data[i].orderId+'"><i class="layui-icon">&#xe640;</i> 删除</a>'
                     +  '</td>'
                     +'</tr>';
                 }
