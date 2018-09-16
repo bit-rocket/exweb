@@ -44,3 +44,8 @@ var (
     OrderTypeMap        = make(map[int]string)
     StatusMap           = make(map[int]string)
 )
+
+const (
+    OrderBuyThenSell            =   1
+    OrderSellThenBuy            =   2
+)

@@ -2,6 +2,7 @@ package order
 
 import (
     "fmt"
+    "encoding/json"
 //    "time"
     "database/sql"
 
@@ -119,6 +120,7 @@ func (oc *OController) PostNew() {
         oc.Ctx.JSON(dft_msg)
         return
     }
+
     var order Order
     err := oc.Ctx.ReadJSON(&order)
     if err != nil {
@@ -126,7 +128,46 @@ func (oc *OController) PostNew() {
         oc.Ctx.JSON(map[string]string{"msg":err.Error()})
         return
     }
-    oc.Ctx.Application().Logger().Infof("read json :%v", order)
+    order_json, err := json.Marshal(order)
+    oc.Ctx.Application().Logger().Infof("read json :%s", order_json)
+    if order.OrderId > 0 {
+        oc.Ctx.Application().Logger().Warnf("ip[%s] order id > 0! order:%s",
+                oc.Ctx.RemoteAddr(), order_json)
+        dft_msg["msg"] = "post json error!"
+        oc.Ctx.JSON(dft_msg)
+        return
+    }
     // try insert into db
+    db_conf := fmt.Sprintf("%s:%s@/%s",
+            comm.GConf.DbConf.DBUser, comm.GConf.DbConf.DBPass,
+            comm.GConf.DbConf.DBName)
+    db, err := sql.Open("mysql", db_conf)
+    if err != nil {
+        oc.Ctx.Application().Logger().Infof("ip[%s] db error:%s",
+                oc.Ctx.RemoteAddr(), err.Error())
+        return
+    }
+    defer db.Close()
+
+    price_field_name := "buy_price"
+    price_field_value := order.BuyPrice
+    if order.OrderType == comm.OrderSellThenBuy {
+        price_field_name = "sell_price"
+        price_field_value = order.SellPrice
+    }
+    prepare_sql := fmt.Sprintf("insert into coin_order (exchange_name, trading_pair, order_type," +
+            "order_amount, %s, create_time) values (?, ?, ?, ?, ?, now())", price_field_name)
+    insForm, err := db.Prepare(prepare_sql)
+    if err != nil {
+        oc.Ctx.Application().Logger().Warnf("prepare sql[%s] error:%s",
+                prepare_sql, err.Error())
+        dft_msg["msg"] = "internal sql error."
+        oc.Ctx.JSON(dft_msg)
+        return
+    }
+    insForm.Exec(order.ExName, order.TradingPair, order.OrderType,
+            order.OrderAmount, price_field_value)
+
     oc.Ctx.JSON(map[string]string{"msg":"ok"})
+    return
 }
