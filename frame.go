@@ -34,6 +34,10 @@ func ProcessInit(conf string) (err error) {
     if err != nil {
         return
     }
+
+    comm.OrderTypeMap[0] = "dft"
+    comm.OrderTypeMap[1] = "buy2sell"
+    comm.OrderTypeMap[2] = "sell2buy"
     return
 }
 

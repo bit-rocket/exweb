@@ -9,6 +9,7 @@ create table if not exists coin_order (
     id int auto_increment,
     exchange_name varchar(64),
     trading_pair varchar(64),
+    order_type tinyint default 1 comment "1 buy then sell, 2 sell then buy",
     order_amount    decimal(18,8) default 0.0,
     holding     decimal(18, 8) default 0.0,
     buy_price   decimal(18, 8) default 0.0,

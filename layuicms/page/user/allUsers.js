@@ -176,6 +176,7 @@ layui.config({
                     +  '<td>'+currData[i].exName+'</td>'
                     +  '<td>'+currData[i].tradingPair+'</td>'
                     +  '<td>'+currData[i].orderAmount+'</td>'
+                    +  '<td>'+currData[i].orderType+'</td>'
                     +  '<td>'+currData[i].holding+'</td>'
                     +  '<td>'+currData[i].buyPrice+'</td>'
                     +  '<td>'+currData[i].sellPrice+'</td>'

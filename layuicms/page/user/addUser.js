@@ -27,15 +27,14 @@ layui.config({
          window.sessionStorage.setItem("addUser",JSON.stringify(addUserArray));
          //弹出loading
          var index = top.layer.msg('数据提交中，请稍候',{icon: 16,time:false,shade:0.8});
+         // alert("add user content:" + addUser)
          $.ajax({
                type: 'POST',
                url: '/order/new',
-               data: addUserArray,
+               data: addUser,
                dataType: 'JSON',
                success: function(res) {
-                   // alert("succ " + res.length);
-                   // console.log("log res:" + res[0].exName);
-                   alert("result:" + JSON.stringify(res));
+                   // alert("result:" + JSON.stringify(res));
 
                    top.layer.close(index);
                    top.layer.msg("添加成功！");
