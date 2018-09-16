@@ -29,6 +29,13 @@ type Order struct {
     CreateTime      string      `json:"createTime"`
 }
 
+type TodealRes struct {
+    Code            int     `json:"code"`
+    Msg             string  `josn:"msg"`
+    Count           int     `json:"count"`
+    Data            []Order `json:"data"`
+}
+
 type OController struct {
     Ctx         iris.Context
     Session     *sessions.Session
@@ -94,7 +101,14 @@ func (oc *OController) GetTodeal() {
         }
         orders = append(orders, order)
     }
-    oc.Ctx.JSON(orders)
+
+    todealRes := TodealRes {
+        Code: 0,
+        Msg: "",
+        Count: len(orders),
+        Data: orders,
+    }
+    oc.Ctx.JSON(todealRes)
 }
 
 func (oc *OController) PostNew() {
