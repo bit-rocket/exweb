@@ -14,14 +14,14 @@ import (
 )
 
 type Order struct {
-    OrderId         string      `json:"orderId"`
+    OrderId         int         `json:"orderId"`
     ExName          string      `json:"exName"`
     TradingPair     string      `json:"tradingPair"`
-    OrderType       string      `json:"orderType"`
-    BuyPrice        string      `json:"buyPrice"`
-    OrderAmount     string      `json:"orderAmount"`
+    OrderType       int         `json:"orderType"`
+    BuyPrice        float64     `json:"buyPrice"`
+    OrderAmount     float64     `json:"orderAmount"`
     Holding         string      `json:"holding"`
-    SellPrice       string      `json:"sellPrice"`
+    SellPrice       float64     `json:"sellPrice"`
     EarnRate        string      `json:"earnRate"`
     EarnAmount      string      `json:"earnAmount"`
     Status          string      `json:"status"`
@@ -74,7 +74,7 @@ func (oc *OController) GetTodeal() {
     for res.Next() {
         var id, status, order_type int
         var exchange_name, trading_pair string
-        var buy_price, holding, sell_price, earn_rate, earn_amount, order_amount float32
+        var buy_price, holding, sell_price, earn_rate, earn_amount, order_amount float64
         var finish_time, create_time []byte
         err = res.Scan(&id, &exchange_name, &trading_pair,
                 &buy_price, &order_type, &order_amount, &holding,
@@ -85,14 +85,14 @@ func (oc *OController) GetTodeal() {
             continue
         }
         order := Order {
-            OrderId: fmt.Sprintf("%d", id),
+            OrderId: id,
             ExName: exchange_name,
             TradingPair: trading_pair,
-            BuyPrice: fmt.Sprintf("%.4f", buy_price),
-            OrderType: fmt.Sprintf("%s", comm.OrderTypeMap[order_type]),
-            OrderAmount: fmt.Sprintf("%.4f", order_amount),
+            BuyPrice: buy_price,
+            OrderType: order_type,
+            OrderAmount: order_amount,
             Holding: fmt.Sprintf("%.4f", holding),
-            SellPrice: fmt.Sprintf("%.4f", sell_price),
+            SellPrice: sell_price,
             EarnRate: fmt.Sprintf("%.4f", earn_rate),
             EarnAmount: fmt.Sprintf("%.4f", earn_amount),
             Status: fmt.Sprintf("%s", comm.StatusMap[status]),
@@ -112,6 +112,13 @@ func (oc *OController) GetTodeal() {
 }
 
 func (oc *OController) PostNew() {
+    dft_msg := map[string]string{"msg":"access denied."}
+    if oc.Session.GetString(comm.UsernameKey) == "" {
+        oc.Ctx.Application().Logger().Warnf("deny unauthorized access from:%s",
+                oc.Ctx.RemoteAddr())
+        oc.Ctx.JSON(dft_msg)
+        return
+    }
     var order Order
     err := oc.Ctx.ReadJSON(&order)
     if err != nil {

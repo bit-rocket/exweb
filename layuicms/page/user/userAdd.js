@@ -22,11 +22,11 @@ layui.use(['form','layer'],function(){
         var newOrder = "";
         newOrder += '{"exName":"'+ $(".exName").val() +'",';  // exchange name
         newOrder += '"tradingPair":"'+ $(".tradingPair").val() +'",';
-        newOrder += '"orderAmount":"'+ $(".orderAmount").val() +'",';
-        newOrder += '"orderId":"'+ $(".orderId").val() +'",';
-        newOrder += '"buyPrice":"'+ $(".price").val() +'",';
-        newOrder += '"sellPrice":"'+ $(".price").val() +'",';
-        newOrder += '"orderType":"'+ $(".orderType").val() +'"}';
+        newOrder += '"orderAmount":'+ $(".orderAmount").val() +',';
+        newOrder += '"orderId":'+ $(".orderId").val() +',';
+        newOrder += '"buyPrice":'+ $(".price").val() +',';
+        newOrder += '"sellPrice":'+ $(".price").val() +',';
+        newOrder += '"orderType":'+ $(".orderType").val() +'}';
         post_url = data.field.targetUrl;
         console.log("get post url:" + post_url);
         console.log("new order:" + newOrder);
