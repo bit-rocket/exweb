@@ -5,6 +5,10 @@ layui.use(['form','layer','table','laytpl'],function(){
         laytpl = layui.laytpl,
         table = layui.table;
 
+    var typeDict = {
+            "1": "buy2sell",
+            "2": "sell2buy"
+    };
     //用户列表
     var tableIns = table.render({
         elem: '#userList',
@@ -21,7 +25,10 @@ layui.use(['form','layer','table','laytpl'],function(){
             {field: 'exName', title: 'ex', align:"center", width:80},
             {field: 'tradingPair', title: 'pair', align:'center', width:100},
             {field: 'orderAmount', title: 'amount', align:'center', width:100},
-            {field: 'orderType', title: 'type',  align:'center', width:100},
+            {field: 'orderType', title: 'type',  align:'center', width:100,
+            templet: function(d) {
+                return typeDict[d.orderType];
+            }},
             {field: 'holding', title: 'holding', align:'center', width:100},
             {field: 'buyPrice', title: 'buy/sell', align:'center', width:130,
                 templet: function(d) {
