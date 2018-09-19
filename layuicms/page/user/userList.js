@@ -78,11 +78,14 @@ layui.use(['form','layer','table','laytpl'],function(){
                     body.find(".targetUrl").val("/order/digest");
                     body.find(".orderId").val(edit.orderId);
                     // $("#maxOrderAmount").innerHtml("max:" + edit.holding);
-                    console.log(body.find(".maxOrderAmount").text("max:" + edit.holding));
+                    body.find(".maxOrderAmount").text("max:" + edit.holding);
+                    body.find(".addUser").text("digest order");
+                    // or body.find(".addUser").html("digest order");
+
                     form.render();
                 }
                 setTimeout(function(){
-                    layui.layer.tips('点击此处返回用户列表', '.layui-layer-setwin .layui-layer-close', {
+                    layui.layer.tips('点击此处返回订单列表', '.layui-layer-setwin .layui-layer-close', {
                         tips: 3
                     });
                 },500)

@@ -7,15 +7,15 @@ layui.use(['form','layer'],function(){
     form.on("submit(addUser)",function(data){
         //弹出loading
         var index = top.layer.msg('数据提交中，请稍候',{icon: 16,time:false,shade:0.8});
-        // 实际使用时的提交信息
+        // ajax post demo
         // $.post("上传路径",{
-        //     userName : $(".userName").val(),  //登录名
-        //     userEmail : $(".userEmail").val(),  //邮箱
-        //     userSex : data.field.sex,  //性别
-        //     userGrade : data.field.userGrade,  //会员等级
-        //     userStatus : data.field.userStatus,    //用户状态
-        //     newsTime : submitTime,    //添加时间
-        //     userDesc : $(".userDesc").text(),    //用户简介
+        //     userName : $(".userName").val(),
+        //     userEmail : $(".userEmail").val(),
+        //     userSex : data.field.sex,
+        //     userGrade : data.field.userGrade,
+        //     userStatus : data.field.userStatus,
+        //     newsTime : submitTime,
+        //     userDesc : $(".userDesc").text(),
         // },function(res){
         //
         // })
@@ -36,7 +36,7 @@ layui.use(['form','layer'],function(){
             data: newOrder,
             dataType: 'JSON',
             success: function(res) {
-                // alert("result:" + JSON.stringify(res));
+                console.log("result:" + JSON.stringify(res));
 
                 top.layer.close(index);
                 top.layer.msg("添加成功！");

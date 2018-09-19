@@ -171,3 +171,8 @@ func (oc *OController) PostNew() {
     oc.Ctx.JSON(map[string]string{"msg":"ok"})
     return
 }
+
+func (oc *OController) PostDigest() {
+    oc.Ctx.JSON(map[string]string{"msg":"ok"})
+    return
+}
