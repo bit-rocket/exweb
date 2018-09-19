@@ -25,14 +25,14 @@ create table if not exists coin_order (
     primary key (id)
 ) engine=innodb;
 
- insert into coin_order (exchange_name, trading_pair, buy_price, order_amount,
-    holding, sell_price, earn_rate, earn_amount, status, create_time, finish_time)
-    values ("okex", "eos/usdt", 4.32, 200, 100.23, 5.82, 0.15, 30, 3,
-    "2018-09-09 11:23:58", "2018-09-10 11:23:58");
+# insert into coin_order (exchange_name, trading_pair, buy_price, order_amount,
+#    holding, sell_price, earn_rate, earn_amount, status, create_time, finish_time)
+#    values ("okex", "eos/usdt", 4.32, 200, 100.23, 5.82, 0.15, 30, 3,
+#    "2018-09-09 11:23:58", "2018-09-10 11:23:58");
 
 create table if not exists coin_son_order (
     id  int auto_increment,
-    son_order_id  int  comment "exchange order id",
+    order_id  int  comment "exchange order id",
     parent_id   int   comment "sql record id",
     exchange_name   varchar(64),
     trading_pair varchar(64),

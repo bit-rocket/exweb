@@ -173,6 +173,23 @@ func (oc *OController) PostNew() {
 }
 
 func (oc *OController) PostDigest() {
+    dft_msg := map[string]string{"msg":"access denied."}
+    if oc.Session.GetString(comm.UsernameKey) == "" {
+        oc.Ctx.Application().Logger().Warnf("digest deny unauthorized access from:%s",
+                oc.Ctx.RemoteAddr())
+        oc.Ctx.JSON(dft_msg)
+        return
+    }
+    // read post json
+
+    // conditions judge
+
+    // - parent exists
+    // - holding amount can cover
+    // - TODO price judge
+    // - order type match
+    // - insert a son order
+
     oc.Ctx.JSON(map[string]string{"msg":"ok"})
     return
 }
