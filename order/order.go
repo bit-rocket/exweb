@@ -181,6 +181,15 @@ func (oc *OController) PostDigest() {
         return
     }
     // read post json
+    var order Order
+    err := oc.Ctx.ReadJSON(&order)
+    if err != nil {
+        oc.Ctx.Application().Logger().Warnf("digest read json error:%s", err.Error())
+        oc.Ctx.JSON(map[string]string{"msg":err.Error()})
+        return
+    }
+    order_json, err := json.Marshal(order)
+    oc.Ctx.Application().Logger().Infof("digest read json :%s", order_json)
 
     // conditions judge
 
