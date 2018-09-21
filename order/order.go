@@ -194,6 +194,41 @@ func (oc *OController) PostDigest() {
     // conditions judge
 
     // - parent exists
+    db_conf := fmt.Sprintf("%s:%s@/%s",
+            comm.GConf.DbConf.DBUser, comm.GConf.DbConf.DBPass,
+            comm.GConf.DbConf.DBName)
+    db, err := sql.Open("mysql", db_conf)
+    if err != nil {
+        oc.Ctx.Application().Logger().Infof("db error:%s", err.Error())
+        oc.Ctx.JSON(map[string]string{"msg":err.Error()})
+        return
+    }
+    defer db.Close()
+    query := fmt.Sprintf(`select id
+            from coin_order
+            where id = %d
+            `, order.OrderId)
+    fmt.Println(query)
+    res, err := db.Query(query)
+    if err != nil {
+        oc.Ctx.Application().Logger().Warnf("digest db error:%s", err.Error())
+        oc.Ctx.JSON(map[string]string{"msg":err.Error()})
+        return
+    }
+    fmt.Println(res)
+    count := 0
+    for res.Next() {
+        var id int
+        count += 1
+        res.Scan(&id)
+        fmt.Println("sql record id is:", id)
+    }
+    if count < 1 {
+        oc.Ctx.Application().Logger().Warn("digest rec count < 1 error!")
+        oc.Ctx.JSON(map[string]string{"msg":"internal count error!"})
+        return
+    }
+
     // - holding amount can cover
     // - TODO price judge
     // - order type match

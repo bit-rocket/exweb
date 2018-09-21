@@ -37,9 +37,14 @@ layui.use(['form','layer'],function(){
             dataType: 'JSON',
             success: function(res) {
                 console.log("result:" + JSON.stringify(res));
+                console.log(res.msg)
 
                 top.layer.close(index);
-                top.layer.msg("添加成功！");
+                if (res.msg != 'ok') {
+                    top.layer.msg("添加失败！");
+                } else {
+                    top.layer.msg("添加成功！");
+                }
                  layer.closeAll("iframe");
                  //刷新父页面
                  parent.location.reload();
