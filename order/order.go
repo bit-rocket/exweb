@@ -204,24 +204,24 @@ func (oc *OController) PostDigest() {
         return
     }
     defer db.Close()
-    query := fmt.Sprintf(`select id
+    query := fmt.Sprintf(`select id, holding, order_type
             from coin_order
             where id = %d
             `, order.OrderId)
-    fmt.Println(query)
     res, err := db.Query(query)
     if err != nil {
         oc.Ctx.Application().Logger().Warnf("digest db error:%s", err.Error())
         oc.Ctx.JSON(map[string]string{"msg":err.Error()})
         return
     }
-    fmt.Println(res)
     count := 0
+    // res has no more than 1 record
+    id := 0
+    otype := 1
+    holding := 0.0
     for res.Next() {
-        var id int
         count += 1
-        res.Scan(&id)
-        fmt.Println("sql record id is:", id)
+        res.Scan(&id, &holding, &otype)
     }
     if count < 1 {
         oc.Ctx.Application().Logger().Warn("digest rec count < 1 error!")
@@ -230,9 +230,65 @@ func (oc *OController) PostDigest() {
     }
 
     // - holding amount can cover
-    // - TODO price judge
+    if order.OrderAmount > holding {
+        oc.Ctx.Application().Logger().Warn("digest order amount error!")
+        oc.Ctx.JSON(map[string]string{"msg":"digest order amount error!"})
+        return
+    }
+    // - price judge
     // - order type match
+    if order.OrderType == otype {
+        oc.Ctx.Application().Logger().Warn("digest order type error!")
+        oc.Ctx.JSON(map[string]string{"msg":"digest order type error!"})
+        return
+    }
     // - insert a son order
+    digest_insert_sql := fmt.Sprintf("insert into coin_son_order (" +
+            "parent_id, exchange_name, trading_pair, order_amount, price," +
+            "order_type, create_time) values (" +
+            "?, ?, ?, ?, ?, ?, now())")
+    insForm, err := db.Prepare(digest_insert_sql)
+    if err != nil {
+        oc.Ctx.Application().Logger().Warnf("digest prepare sql[%s] error:%s",
+                digest_insert_sql, err.Error())
+        dft_msg["msg"] = "digest internal sql error."
+        oc.Ctx.JSON(dft_msg)
+        return
+    }
+    price := order.SellPrice
+    if order.OrderType == comm.OrderSellThenBuy {
+        price = order.BuyPrice
+    }
+    insRes, err := insForm.Exec(
+            order.OrderId, order.ExName, order.TradingPair, order.OrderAmount,
+            price, order.OrderType)
+    if err != nil {
+        oc.Ctx.Application().Logger().Warnf("digest exec sql[%s] error:%s",
+                digest_insert_sql, err.Error())
+        dft_msg["msg"] = "digest internal sql error."
+        oc.Ctx.JSON(dft_msg)
+        return
+    }
+    lastId, err1 := insRes.LastInsertId()
+    if err1 != nil {
+        oc.Ctx.Application().Logger().Warnf("digest sql[%s] get last insert error:%s",
+                digest_insert_sql, err1.Error())
+        dft_msg["msg"] = "digest sql get lastid error."
+        oc.Ctx.JSON(dft_msg)
+        return
+    }
+    rowsAffected, err2 := insRes.RowsAffected()
+    if err2 != nil {
+        oc.Ctx.Application().Logger().Warnf("digest sql[%s] get rows affected error:%s",
+                digest_insert_sql, err2.Error())
+        dft_msg["msg"] = "digest sql get row affected error."
+        oc.Ctx.JSON(dft_msg)
+        return
+    }
+    oc.Ctx.Application().Logger().Infof("digest sql[%s] lastid:%d rows affected:%d",
+            digest_insert_sql, lastId, rowsAffected)
+
+    // - TODO son order view page
 
     oc.Ctx.JSON(map[string]string{"msg":"ok"})
     return
