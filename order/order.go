@@ -30,6 +30,21 @@ type Order struct {
     CreateTime      string      `json:"createTime"`
 }
 
+type SonOrder struct {
+    Id              int         `json:"id"`
+    OrderId         int         `json:"orderId"`
+    ParentId        int         `json:"parentId"`
+    ExName          string      `json:"exName"`
+    TradingPair     string      `json:"tradingPair"`
+    OrderAmount     float64     `json:"orderAmount"`
+    DealAmount      string      `json:"dealAmount"`
+    Price           float64     `json:"price"`
+    OrderType       int         `json:"orderType"`
+    Status          string      `json:"status"`
+    FinishTime      string      `json:"finishTime"`
+    CreateTime      string      `json:"createTime"`
+}
+
 type TodealRes struct {
     Code            int     `json:"code"`
     Msg             string  `josn:"msg"`
@@ -292,4 +307,69 @@ func (oc *OController) PostDigest() {
 
     oc.Ctx.JSON(map[string]string{"msg":"ok"})
     return
+}
+
+func (oc *OController) GetDigest() {
+    var son_orders []SonOrder
+    if oc.Session.GetString(comm.UsernameKey) == "" {
+        oc.Ctx.Application().Logger().Infof("not login from[%s]",
+                oc.Ctx.RemoteAddr())
+        oc.Ctx.JSON(son_orders)
+        return
+    }
+
+    // format:
+    //          user:pass@/dbname
+    db_conf := fmt.Sprintf("%s:%s@/%s",
+            comm.GConf.DbConf.DBUser, comm.GConf.DbConf.DBPass,
+            comm.GConf.DbConf.DBName)
+    db, err := sql.Open("mysql", db_conf)
+    if err != nil {
+        oc.Ctx.Application().Logger().Infof("db error:%s", err.Error())
+        return
+    }
+    defer db.Close()
+    // db refer
+    //    http://www.golangprograms.com/example-of-golang-crud-using-mysql-from-scratch.html
+    query := `select id, order_id, parent_id, exchange_name, trading_pair,
+            order_amount, deal_amount, price, order_type,
+            status, create_time, finish_time
+            from coin_son_order
+            `
+    res, err := db.Query(query)
+    if err != nil {
+        oc.Ctx.Application().Logger().Warnf("db error:%s", err.Error())
+        return
+    }
+    for res.Next() {
+        var id, order_id, parent_id, status, order_type int
+        var exchange_name, trading_pair string
+        var order_amount, deal_amount, price float64
+        var finish_time, create_time []byte
+        err = res.Scan(&id, &order_id, &parent_id, &exchange_name, &trading_pair,
+                &order_amount, &deal_amount, &price, &order_type,
+                &status, &create_time, &finish_time)
+        if err != nil {
+            oc.Ctx.Application().Logger().Warnf("scan error:%s", err.Error())
+            continue
+        }
+        order := SonOrder {
+            Id: id,
+            OrderId: order_id,
+            ParentId: parent_id,
+            ExName: exchange_name,
+            TradingPair: trading_pair,
+            OrderAmount: order_amount,
+            DealAmount: fmt.Sprintf("%.4f", deal_amount),
+            Price: price,
+            OrderType: order_type,
+            // TODO status desc
+            Status: fmt.Sprintf("%s", comm.StatusMap[status]),
+            CreateTime: fmt.Sprintf("%s", string(create_time)),
+            FinishTime: fmt.Sprintf("%s", string(finish_time)),
+        }
+        son_orders = append(son_orders, order)
+    }
+
+    oc.Ctx.JSON(son_orders)
 }
