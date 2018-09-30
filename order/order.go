@@ -52,6 +52,13 @@ type TodealRes struct {
     Data            []Order `json:"data"`
 }
 
+type SonOrderRes struct {
+    Code            int     `json:"code"`
+    Msg             string  `josn:"msg"`
+    Count           int     `json:"count"`
+    Data            []SonOrder `json:"data"`
+}
+
 type OController struct {
     Ctx         iris.Context
     Session     *sessions.Session
@@ -371,5 +378,12 @@ func (oc *OController) GetDigest() {
         son_orders = append(son_orders, order)
     }
 
-    oc.Ctx.JSON(son_orders)
+    oc.Ctx.Application().Logger().Infof("digest orders:%v", son_orders)
+    sonRes := SonOrderRes {
+        Code: 0,
+        Msg: "",
+        Count: len(son_orders),
+        Data: son_orders,
+    }
+    oc.Ctx.JSON(sonRes)
 }

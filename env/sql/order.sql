@@ -32,8 +32,8 @@ create table if not exists coin_order (
 
 create table if not exists coin_son_order (
     id  int auto_increment,
-    order_id  int  comment "exchange order id",
-    parent_id   int   comment "sql record id",
+    order_id  int  default 0 comment "exchange order id",
+    parent_id   int  default 0  comment "sql record id",
     exchange_name   varchar(64),
     trading_pair varchar(64),
     order_amount  decimal(18, 8) default 0.0,
