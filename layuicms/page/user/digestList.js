@@ -22,7 +22,7 @@ layui.use(['form','layer','table','laytpl'],function(){
         cols : [[
             {type: "checkbox", fixed:"left", width:50},
             {field: 'orderId', title: 'orderId', align:"center", width:80},
-            {field: 'parentId', title: 'pId', align:"center", width:80},
+            {field: 'parentId', title: 'pid', align:"center", width:80},
             {field: 'exName', title: 'ex', align:"center", width:80},
             {field: 'tradingPair', title: 'pair', align:'center', width:100},
             {field: 'orderAmount', title: 'orderAmount', align:'center', width:100},
@@ -41,7 +41,7 @@ layui.use(['form','layer','table','laytpl'],function(){
         ]]
     });
 
-    //搜索【此功能需要后台配合，所以暂时没有动态效果演示】
+    // TODO
     $(".search_btn").on("click",function(){
         if($(".searchVal").val() != ''){
             table.reload("newsListTable",{
@@ -99,14 +99,14 @@ layui.use(['form','layer','table','laytpl'],function(){
 
     //批量删除
     $(".delAll_btn").click(function(){
-        var checkStatus = table.checkStatus('userListTable'),
+        var checkStatus = table.checkStatus('digestListTable'),
             data = checkStatus.data,
             newsId = [];
         if(data.length > 0) {
             for (var i in data) {
                 newsId.push(data[i].newsId);
             }
-            layer.confirm('确定删除选中的用户？', {icon: 3, title: '提示信息'}, function (index) {
+            layer.confirm('确定撤销选中的订单？', {icon: 3, title: '提示信息'}, function (index) {
                 // $.get("删除文章接口",{
                 //     newsId : newsId  //将需要删除的newsId作为参数传入
                 // },function(data){
@@ -115,7 +115,7 @@ layui.use(['form','layer','table','laytpl'],function(){
                 // })
             })
         }else{
-            layer.msg("请选择需要删除的用户");
+            layer.msg("请选择需要撤销的订单");
         }
     })
 
