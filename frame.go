@@ -45,6 +45,12 @@ func ProcessInit(conf string) (err error) {
     comm.StatusMap[3] = "selling"
     comm.StatusMap[4] = "quit"
     comm.StatusMap[5] = "finish"
+
+    comm.SonStatusMap[0] = "created"
+    comm.SonStatusMap[1] = "made"
+    comm.SonStatusMap[2] = "dealt"
+    comm.SonStatusMap[3] = "undo"
+    comm.SonStatusMap[4] = "finish"
     return
 }
 

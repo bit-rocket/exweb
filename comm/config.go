@@ -43,9 +43,17 @@ var (
     UserpassKey         = "password"
     OrderTypeMap        = make(map[int]string)
     StatusMap           = make(map[int]string)
+    SonStatusMap        = make(map[int]string)
 )
 
 const (
     OrderBuyThenSell            =   1
     OrderSellThenBuy            =   2
+
+    StatusSonOrderCreated           = 0
+    StatusSonOrderMade              = 1
+    StatusSonOrderDealt             = 2
+    StatusSonOrderMannualyUndo      = 3
+    StatusSonOrderFinish            = 4
 )
+

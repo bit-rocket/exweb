@@ -371,7 +371,7 @@ func (oc *OController) GetDigest() {
             Price: price,
             OrderType: order_type,
             // TODO status desc
-            Status: fmt.Sprintf("%s", comm.StatusMap[status]),
+            Status: fmt.Sprintf("%s", comm.SonStatusMap[status]),
             CreateTime: fmt.Sprintf("%s", string(create_time)),
             FinishTime: fmt.Sprintf("%s", string(finish_time)),
         }
@@ -386,4 +386,59 @@ func (oc *OController) GetDigest() {
         Data: son_orders,
     }
     oc.Ctx.JSON(sonRes)
+}
+
+func (oc *OController) PostCanceldigest() {
+    dft_msg := map[string]string{"msg":"access denied."}
+    if oc.Session.GetString(comm.UsernameKey) == "" {
+        oc.Ctx.Application().Logger().Warnf("digest deny unauthorized access from:%s",
+                oc.Ctx.RemoteAddr())
+        oc.Ctx.JSON(dft_msg)
+        return
+    }
+    // read post json
+    var sorder SonOrder
+    err := oc.Ctx.ReadJSON(&sorder)
+    if err != nil {
+        oc.Ctx.Application().Logger().Warnf("cancel digest read json error:%s", err.Error())
+        oc.Ctx.JSON(map[string]string{"msg":err.Error()})
+        return
+    }
+    order_json, err := json.Marshal(sorder)
+    oc.Ctx.Application().Logger().Infof("digest read json :%s", order_json)
+
+    // - parent exists
+    db_conf := fmt.Sprintf("%s:%s@/%s",
+            comm.GConf.DbConf.DBUser, comm.GConf.DbConf.DBPass,
+            comm.GConf.DbConf.DBName)
+    db, err := sql.Open("mysql", db_conf)
+    if err != nil {
+        oc.Ctx.Application().Logger().Infof("db error:%s", err.Error())
+        oc.Ctx.JSON(map[string]string{"msg":err.Error()})
+        return
+    }
+    defer db.Close()
+    up_sql := `update coin_son_order set status = ? where id= ?`
+    upForm, err := db.Prepare(up_sql)
+    if err != nil {
+        oc.Ctx.Application().Logger().Warnf("update sql prepare error:%s", err.Error())
+        oc.Ctx.JSON(map[string]string{"msg":err.Error()})
+        return
+    }
+    res, err := upForm.Exec(comm.StatusSonOrderMannualyUndo, sorder.Id)
+    if err != nil {
+        oc.Ctx.Application().Logger().Warnf("update sql exec error:%s", err.Error())
+        oc.Ctx.JSON(map[string]string{"msg":err.Error()})
+        return
+    }
+    affect, err := res.RowsAffected()
+    if err != nil {
+        oc.Ctx.Application().Logger().Warnf("get rows affected error:%s", err.Error())
+        oc.Ctx.JSON(map[string]string{"msg":err.Error()})
+        return
+    }
+    oc.Ctx.Application().Logger().Infof("get rows affected:%v", affect)
+
+    oc.Ctx.JSON(map[string]string{"msg":"ok"})
+    return
 }

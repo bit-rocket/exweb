@@ -59,42 +59,33 @@ layui.use(['form','layer','table','laytpl'],function(){
 
     //添加用户
     function addUser(edit){
-        var index = layui.layer.open({
-            title : "添加用户",
-            type : 2,
-            content : "userAdd.html",
-            success : function(layero, index){
-                var body = layui.layer.getChildFrame('body', index);
-                if(edit){
-                    body.find(".exName").val(edit.exName);
-                    body.find(".tradingPair").val(edit.tradingPair);
-                    body.find(".orderAmount").val(edit.holding);
-                    body.find(".price").val(edit.buyPrice);
-                    body.find(".targetUrl").val("/order/digest");
-                    body.find(".orderId").val(edit.orderId);
-                    // $("#maxOrderAmount").innerHtml("max:" + edit.holding);
-                    body.find(".maxOrderAmount").text("max:" + edit.holding);
-                    body.find(".addUser").text("digest order");
-                    // or body.find(".addUser").html("digest order");
-
-                    form.render();
-                }
-                setTimeout(function(){
-                    layui.layer.tips('点击此处返回订单列表', '.layui-layer-setwin .layui-layer-close', {
-                        tips: 3
-                    });
-                },500)
-            }
-        })
-        layui.layer.full(index);
-        window.sessionStorage.setItem("index",index);
-        //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
-        $(window).on("resize",function(){
-            layui.layer.full(window.sessionStorage.getItem("index"));
-        })
+        if (edit) {
+            pdata = '{';
+            pdata += '"id":' + edit.id;
+            pdata += '}';
+            console.log(pdata)
+            $.ajax({
+                type: "POST",
+                url: "/order/canceldigest",
+                data: pdata,
+                dateType: 'JSON',
+                success: function(res) {
+                    console.log("result:" + JSON.stringify(res));
+                    if (res.msg != 'ok') {
+                        top.layer.msg("pause失败！");
+                    } else {
+                        top.layer.msg("pause成功！");
+                    }
+                },
+                error: function(res) {
+                    console.log("error:" + JSON.stringify(res));
+                    top.layer.msg("pause失败！");
+                },
+            });
+        }
     }
     $(".addNews_btn").click(function(){
-        addUser();
+        layer.msg("not ok yet.");
     })
 
     //批量删除
