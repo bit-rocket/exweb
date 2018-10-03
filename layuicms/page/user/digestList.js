@@ -9,6 +9,7 @@ layui.use(['form','layer','table','laytpl'],function(){
             "1": "2buy",
             "2": "2sell"
     };
+    var UNDO_STATUS_STR = "undo";
     // digest order list
     var tableIns = table.render({
         elem: '#digestList',
@@ -37,7 +38,16 @@ layui.use(['form','layer','table','laytpl'],function(){
             templet: function(d){
                 return "" + d.createTime + " / " + d.finishTime;
             }},
-            {title: 'op', templet:'#digestListBar',fixed:"right",align:"center", minWidth:170}
+            {title: 'op', fixed:"right",align:"center", minWidth:170,
+            templet: function(d) {
+                op_html = '<a class="layui-btn layui-btn-xs" lay-event="cancel">pause trade</a>';
+                if (d.status == UNDO_STATUS_STR) {
+                    op_html = '<a class="layui-btn layui-btn-xs layui-btn-warm" ' +
+                        ' lay-event="redo">' +
+                        'recover trade</a>'
+                }
+                return op_html;
+            }}
         ]]
     });
 
@@ -58,10 +68,10 @@ layui.use(['form','layer','table','laytpl'],function(){
     });
 
     //添加用户
-    function addUser(edit){
-        if (edit) {
+    function cancelDigest(data){
+        if (data) {
             pdata = '{';
-            pdata += '"id":' + edit.id;
+            pdata += '"id":' + data.id;
             pdata += '}';
             console.log(pdata)
             $.ajax({
@@ -115,8 +125,11 @@ layui.use(['form','layer','table','laytpl'],function(){
         var layEvent = obj.event,
             data = obj.data;
 
-        if(layEvent === 'edit'){ //编辑
-            addUser(data);
+        if(layEvent === 'cancel'){ //编辑
+            cancelDigest(data);
+        } else if(layEvent == 'redo') {
+            // TODO: backend function
+            layer.msg("try redo");
         }else if(layEvent === 'usable'){ //启用禁用
             var _this = $(this),
                 usableText = "是否确定禁用此用户？",
