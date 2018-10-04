@@ -408,13 +408,25 @@ func (oc *OController) PostCanceldigest() {
     oc.Ctx.Application().Logger().Infof("digest read json :%s", order_json)
 
     // - parent exists
+    err = oc.updateSonOrder(sorder, comm.StatusSonOrderMannualyUndo)
+    if err != nil {
+        oc.Ctx.Application().Logger().Warnf("update digest id[%d] status error:%s",
+                sorder.Id, err.Error())
+        oc.Ctx.JSON(map[string]string{"msg":err.Error()})
+        return
+    }
+
+    oc.Ctx.JSON(map[string]string{"msg":"ok"})
+    return
+}
+
+func (oc *OController) updateSonOrder(sorder SonOrder, new_status int) (err error) {
     db_conf := fmt.Sprintf("%s:%s@/%s",
             comm.GConf.DbConf.DBUser, comm.GConf.DbConf.DBPass,
             comm.GConf.DbConf.DBName)
     db, err := sql.Open("mysql", db_conf)
     if err != nil {
         oc.Ctx.Application().Logger().Infof("db error:%s", err.Error())
-        oc.Ctx.JSON(map[string]string{"msg":err.Error()})
         return
     }
     defer db.Close()
@@ -422,23 +434,18 @@ func (oc *OController) PostCanceldigest() {
     upForm, err := db.Prepare(up_sql)
     if err != nil {
         oc.Ctx.Application().Logger().Warnf("update sql prepare error:%s", err.Error())
-        oc.Ctx.JSON(map[string]string{"msg":err.Error()})
         return
     }
-    res, err := upForm.Exec(comm.StatusSonOrderMannualyUndo, sorder.Id)
+    res, err := upForm.Exec(new_status, sorder.Id)
     if err != nil {
         oc.Ctx.Application().Logger().Warnf("update sql exec error:%s", err.Error())
-        oc.Ctx.JSON(map[string]string{"msg":err.Error()})
         return
     }
     affect, err := res.RowsAffected()
     if err != nil {
         oc.Ctx.Application().Logger().Warnf("get rows affected error:%s", err.Error())
-        oc.Ctx.JSON(map[string]string{"msg":err.Error()})
         return
     }
     oc.Ctx.Application().Logger().Infof("get rows affected:%v", affect)
-
-    oc.Ctx.JSON(map[string]string{"msg":"ok"})
-    return
+    return err
 }
